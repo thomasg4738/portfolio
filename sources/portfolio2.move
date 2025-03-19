@@ -68,3 +68,4 @@ public fun burn_portfolio2<T: drop, C0, C1>(
         portfolio.asset1.withdraw(amount, ctx),
     )
 }
+
