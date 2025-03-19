@@ -1,8 +1,7 @@
 module portfolio::portfolio2;
-use std::u8::min;
-use portfolio::asset::{Asset, new_asset, trailing_zeros};
+
+use portfolio::asset::{Asset, new_asset};
 use sui::coin::{TreasuryCap, CoinMetadata, create_currency, Coin, mint, burn};
-use std::u64::pow;
 use sui::url::Url;
 
 public struct Portfolio2<phantom T, phantom C0, phantom C1> has key, store {
@@ -16,17 +15,13 @@ public fun create_portfolio2<T: drop, C0, C1>(
     witness: T,
     amount0: u64,
     amount1: u64,
+    decimals: u8,
     name: vector<u8>,
     symbol: vector<u8>,
     description: vector<u8>,
     icon_url: Option<Url>,
     ctx: &mut TxContext,
 ): (Portfolio2<T, C0, C1>, CoinMetadata<T>) {
-    let decimals0 = trailing_zeros(amount0);
-    let decimals1 = trailing_zeros(amount1);
-    let decimals = min(decimals0, decimals1);
-    let zeros = pow(10, decimals);
-
     let (treasury_cap, c) = create_currency(
         witness,
         decimals,
@@ -40,8 +35,8 @@ public fun create_portfolio2<T: drop, C0, C1>(
         Portfolio2 {
             id: object::new(ctx),
             treasury_cap,
-            asset0: new_asset<C0>(amount0 / zeros),
-            asset1: new_asset<C1>(amount1 / zeros),
+            asset0: new_asset<C0>(amount0),
+            asset1: new_asset<C1>(amount1),
         },
         c,
     )

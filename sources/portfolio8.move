@@ -1,8 +1,7 @@
 module portfolio::portfolio8;
-use std::u8::min;
-use portfolio::asset::{Asset, new_asset, trailing_zeros};
+
+use portfolio::asset::{Asset, new_asset};
 use sui::coin::{TreasuryCap, CoinMetadata, create_currency, Coin, mint, burn};
-use std::u64::pow;
 use sui::url::Url;
 
 public struct Portfolio8<
@@ -48,26 +47,13 @@ public fun create_portfolio8<
     amount5: u64,
     amount6: u64,
     amount7: u64,
+    decimals: u8,
     name: vector<u8>,
     symbol: vector<u8>,
     description: vector<u8>,
     icon_url: Option<Url>,
     ctx: &mut TxContext,
 ): (Portfolio8<T, C0, C1, C2, C3, C4, C5, C6, C7>, CoinMetadata<T>) {
-    let decimals0 = trailing_zeros(amount0);
-    let decimals1 = trailing_zeros(amount1);
-    let decimals2 = trailing_zeros(amount2);
-    let decimals3 = trailing_zeros(amount3);
-    let decimals4 = trailing_zeros(amount4);
-    let decimals5 = trailing_zeros(amount5);
-    let decimals6 = trailing_zeros(amount6);
-    let decimals7 = trailing_zeros(amount7);
-    let decimals = min(
-        min(min(min(min(min(min(decimals0, decimals1), decimals2), decimals3), decimals4), decimals5), decimals6),
-        decimals7
-    );
-    let zeros = pow(10, decimals);
-
     let (treasury_cap, c) = create_currency(
         witness,
         decimals,
@@ -81,14 +67,14 @@ public fun create_portfolio8<
         Portfolio8 {
             id: object::new(ctx),
             treasury_cap,
-            asset0: new_asset<C0>(amount0 / zeros),
-            asset1: new_asset<C1>(amount1 / zeros),
-            asset2: new_asset<C2>(amount2 / zeros),
-            asset3: new_asset<C3>(amount3 / zeros),
-            asset4: new_asset<C4>(amount4 / zeros),
-            asset5: new_asset<C5>(amount5 / zeros),
-            asset6: new_asset<C6>(amount6 / zeros),
-            asset7: new_asset<C7>(amount7 / zeros),
+            asset0: new_asset<C0>(amount0),
+            asset1: new_asset<C1>(amount1),
+            asset2: new_asset<C2>(amount2),
+            asset3: new_asset<C3>(amount3),
+            asset4: new_asset<C4>(amount4),
+            asset5: new_asset<C5>(amount5),
+            asset6: new_asset<C6>(amount6),
+            asset7: new_asset<C7>(amount7),
         },
         c,
     )

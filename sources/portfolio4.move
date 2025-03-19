@@ -1,7 +1,6 @@
 module portfolio::portfolio4;
-use std::u64::pow;
-use std::u8::min;
-use portfolio::asset::{Asset, new_asset, trailing_zeros};
+
+use portfolio::asset::{Asset, new_asset};
 use sui::coin::{TreasuryCap, CoinMetadata, create_currency, Coin, mint, burn};
 use sui::url::Url;
 
@@ -20,19 +19,13 @@ public fun create_portfolio4<T: drop, C0, C1, C2, C3>(
     amount1: u64,
     amount2: u64,
     amount3: u64,
+    decimals: u8,
     name: vector<u8>,
     symbol: vector<u8>,
     description: vector<u8>,
     icon_url: Option<Url>,
     ctx: &mut TxContext,
 ): (Portfolio4<T, C0, C1, C2, C3>, CoinMetadata<T>) {
-    let decimals0 = trailing_zeros(amount0);
-    let decimals1 = trailing_zeros(amount1);
-    let decimals2 = trailing_zeros(amount2);
-    let decimals3 = trailing_zeros(amount3);
-    let decimals = min(min(min(decimals0, decimals1), decimals2), decimals3);
-    let zeros = pow(10, decimals);
-
     let (treasury_cap, c) = create_currency(
         witness,
         decimals,
@@ -46,10 +39,10 @@ public fun create_portfolio4<T: drop, C0, C1, C2, C3>(
         Portfolio4 {
             id: object::new(ctx),
             treasury_cap,
-            asset0: new_asset<C0>(amount0 / zeros),
-            asset1: new_asset<C1>(amount1 / zeros),
-            asset2: new_asset<C2>(amount2 / zeros),
-            asset3: new_asset<C3>(amount3 / zeros),
+            asset0: new_asset<C0>(amount0),
+            asset1: new_asset<C1>(amount1),
+            asset2: new_asset<C2>(amount2),
+            asset3: new_asset<C3>(amount3),
         },
         c,
     )
